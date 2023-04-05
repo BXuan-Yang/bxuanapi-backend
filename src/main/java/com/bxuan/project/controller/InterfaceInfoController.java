@@ -2,6 +2,8 @@ package com.bxuan.project.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bxuan.bxuanapicommon.model.entity.InterfaceInfo;
+import com.bxuan.bxuanapicommon.model.entity.User;
 import com.bxuan.project.annotation.AuthCheck;
 import com.bxuan.project.common.*;
 import com.bxuan.project.constant.CommonConstant;
@@ -11,8 +13,6 @@ import com.bxuan.project.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.bxuan.project.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.bxuan.project.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.bxuan.project.model.dto.post.PostQueryRequest;
-import com.bxuan.project.model.entity.InterfaceInfo;
-import com.bxuan.project.model.entity.User;
 import com.bxuan.project.model.enums.InterfaceInfoStatusEnum;
 import com.bxuan.project.service.InterfaceInfoService;
 import com.bxuan.project.service.UserService;
@@ -183,10 +183,9 @@ public class InterfaceInfoController {
 
     /**
      * 发布
-     *
-     * @param idRequest
-     * @param request
-     * @return
+     * @param idRequest 接收删除请求
+     * @param request 请求头
+     * @return Boolean
      */
     @PostMapping("/online")
     @AuthCheck(mustRole = "admin")

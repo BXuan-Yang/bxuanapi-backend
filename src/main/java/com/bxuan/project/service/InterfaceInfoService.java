@@ -1,8 +1,7 @@
 package com.bxuan.project.service;
 
-import com.bxuan.project.model.entity.InterfaceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.bxuan.project.model.entity.Post;
+import com.bxuan.bxuanapicommon.model.entity.InterfaceInfo;
 
 /**
 * @author 86150
@@ -12,4 +11,5 @@ import com.bxuan.project.model.entity.Post;
 public interface InterfaceInfoService extends IService<InterfaceInfo> {
 
     void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add);
+
 }

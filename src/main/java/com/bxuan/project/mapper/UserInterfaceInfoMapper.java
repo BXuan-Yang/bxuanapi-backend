@@ -1,7 +1,9 @@
 package com.bxuan.project.mapper;
 
-import com.bxuan.project.model.entity.UserInterfaceInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bxuan.bxuanapicommon.model.entity.UserInterfaceInfo;
+
+import java.util.List;
 
 /**
 * @author 86150
@@ -10,7 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.bxuan.project.model.entity.UserInterfaceInfo
 */
 public interface UserInterfaceInfoMapper extends BaseMapper<UserInterfaceInfo> {
-
+    List<UserInterfaceInfo> listTopInvokeInterfaceInfo(int limit);
 }
 
 

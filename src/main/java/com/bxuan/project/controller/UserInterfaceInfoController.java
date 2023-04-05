@@ -2,22 +2,22 @@ package com.bxuan.project.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bxuan.bxuanapicommon.model.entity.User;
+import com.bxuan.bxuanapicommon.model.entity.UserInterfaceInfo;
 import com.bxuan.project.annotation.AuthCheck;
-import com.bxuan.project.common.*;
+import com.bxuan.project.common.BaseResponse;
+import com.bxuan.project.common.DeleteRequest;
+import com.bxuan.project.common.ErrorCode;
+import com.bxuan.project.common.ResultUtils;
 import com.bxuan.project.constant.CommonConstant;
+import com.bxuan.project.constant.UserConstant;
 import com.bxuan.project.exception.BusinessException;
-import com.bxuan.project.model.dto.interfaceinfo.InterfaceInfoAddRequest;
-import com.bxuan.project.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
-import com.bxuan.project.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
-import com.bxuan.project.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.bxuan.project.model.dto.post.PostQueryRequest;
-import com.bxuan.project.model.entity.InterfaceInfo;
-import com.bxuan.project.model.entity.User;
-import com.bxuan.project.model.enums.InterfaceInfoStatusEnum;
-import com.bxuan.project.service.InterfaceInfoService;
+import com.bxuan.project.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
+import com.bxuan.project.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
+import com.bxuan.project.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequest;
+import com.bxuan.project.service.UserInterfaceInfoService;
 import com.bxuan.project.service.UserService;
-import com.google.gson.Gson;
-import com.yupi.yuapiclientsdk.client.YuApiClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -32,44 +32,38 @@ import java.util.List;
  * @description 信息接口控制
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/userInterfaceInfo")
 public class UserInterfaceInfoController {
 
     @Resource
-    private InterfaceInfoService interfaceInfoService;
+    private UserInterfaceInfoService userInterfaceInfoService;
     @Resource
     private UserService userService;
-    @Resource
-    private YuApiClient yuApiClient;
 
-    /**
-     * 创建接口
-     */
     @PostMapping("/add")
-    public BaseResponse<Long> addInterfaceInfo(@RequestBody InterfaceInfoAddRequest interfaceInfoAddRequest,
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Long> addUserInterfaceInfo(@RequestBody UserInterfaceInfoAddRequest userInterfaceInfoAddRequest,
                                       HttpServletRequest request) {
-        if (interfaceInfoAddRequest == null) {
+        if (userInterfaceInfoAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
+        UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
+        BeanUtils.copyProperties(userInterfaceInfoAddRequest, userInterfaceInfo);
         // 校验
-        interfaceInfoService.validInterfaceInfo(interfaceInfo, true);
+        userInterfaceInfoService.validUserInterfaceInfo(userInterfaceInfo, true);
         User loginUser = userService.getLoginUser(request);
-        interfaceInfo.setUserId(loginUser.getId());
-        boolean result = interfaceInfoService.save(interfaceInfo);
+        userInterfaceInfo.setUserId(loginUser.getId());
+        boolean result = userInterfaceInfoService.save(userInterfaceInfo);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
-        long newInterfaceInfoId = interfaceInfo.getId();
-        return ResultUtils.success(newInterfaceInfoId);
+        long newUserInterfaceInfoId = userInterfaceInfo.getId();
+        return ResultUtils.success(newUserInterfaceInfoId);
     }
 
-    /**
-     * 删除接口
-     */
     @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteInterfaceInfo(@RequestBody DeleteRequest deleteRequest,
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> deleteUserInterfaceInfo(@RequestBody DeleteRequest deleteRequest,
                                             HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -77,203 +71,90 @@ public class UserInterfaceInfoController {
         User user = userService.getLoginUser(request);
         long id = deleteRequest.getId();
         // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
-        if (oldInterfaceInfo == null) {
+        UserInterfaceInfo oldUserInterfaceInfo = userInterfaceInfoService.getById(id);
+        if (oldUserInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         // 仅本人或管理员可删除
-        if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
+        if (!oldUserInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
-        boolean b = interfaceInfoService.removeById(id);
+        boolean b = userInterfaceInfoService.removeById(id);
         return ResultUtils.success(b);
     }
 
-    /**
-     * 更新接口
-     */
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateInterfaceInfo(@RequestBody InterfaceInfoUpdateRequest interfaceInfoUpdateRequest,
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> updateUserInterfaceInfo(@RequestBody UserInterfaceInfoUpdateRequest userInterfaceInfoUpdateRequest,
                                             HttpServletRequest request)  {
-        if (interfaceInfoUpdateRequest == null || interfaceInfoUpdateRequest.getId() <= 0) {
+        if (userInterfaceInfoUpdateRequest == null || userInterfaceInfoUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        BeanUtils.copyProperties(interfaceInfoUpdateRequest, interfaceInfo);
+        UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
+        BeanUtils.copyProperties(userInterfaceInfoUpdateRequest, userInterfaceInfo);
         // 参数校验
-        interfaceInfoService.validInterfaceInfo(interfaceInfo, false);
+        userInterfaceInfoService.validUserInterfaceInfo(userInterfaceInfo, false);
         User user = userService.getLoginUser(request);
-        long id = interfaceInfoUpdateRequest.getId();
+        long id = userInterfaceInfoUpdateRequest.getId();
         // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
-        if (oldInterfaceInfo == null) {
+        UserInterfaceInfo oldUserInterfaceInfo = userInterfaceInfoService.getById(id);
+        if (oldUserInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         // 仅本人或管理员可修改
-        if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
+        if (!oldUserInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
-        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        boolean result = userInterfaceInfoService.updateById(userInterfaceInfo);
         return ResultUtils.success(result);
     }
 
-    /**
-     * 根据 id 获取
-     */
     @GetMapping("/get")
-    public BaseResponse<InterfaceInfo> getInterfaceInfoById(long id) {
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<UserInterfaceInfo> getUserInterfaceInfoById(long id) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        InterfaceInfo interfaceInfo = interfaceInfoService.getById(id);
-        return ResultUtils.success(interfaceInfo);
+        UserInterfaceInfo userInterfaceInfo = userInterfaceInfoService.getById(id);
+        return ResultUtils.success(userInterfaceInfo);
     }
 
-    /**
-     * 获取列表（仅管理员可使用）
-     */
-    @AuthCheck(mustRole = "admin")
     @GetMapping("/list")
-    public BaseResponse<List<InterfaceInfo>> listInterfaceInfo(PostQueryRequest postQueryRequest) {
-        InterfaceInfo interfaceInfoQuery = new InterfaceInfo();
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<List<UserInterfaceInfo>> listUserInterfaceInfo(PostQueryRequest postQueryRequest) {
+        UserInterfaceInfo userInterfaceInfoQuery = new UserInterfaceInfo();
         if (postQueryRequest != null) {
-            BeanUtils.copyProperties(postQueryRequest, interfaceInfoQuery);
+            BeanUtils.copyProperties(postQueryRequest, userInterfaceInfoQuery);
         }
-        QueryWrapper<InterfaceInfo> queryWrapper = new QueryWrapper<>(interfaceInfoQuery);
-        List<InterfaceInfo> interfaceInfoList = interfaceInfoService.list(queryWrapper);
-        return ResultUtils.success(interfaceInfoList);
+        QueryWrapper<UserInterfaceInfo> queryWrapper = new QueryWrapper<>(userInterfaceInfoQuery);
+        List<UserInterfaceInfo> userInterfaceInfoList = userInterfaceInfoService.list(queryWrapper);
+        return ResultUtils.success(userInterfaceInfoList);
     }
 
-    /**
-     * 分页获取列表
-     *
-     * @param interfaceInfoQueryRequest
-     * @param request
-     * @return
-     */
     @GetMapping("/list/page")
-    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest,
-                                                                     HttpServletRequest request) {
-        if (interfaceInfoQueryRequest == null) {
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<UserInterfaceInfo>> listUserInterfaceInfoByPage(UserInterfaceInfoQueryRequest userInterfaceInfoQueryRequest,
+                                                                             HttpServletRequest request) {
+        if (userInterfaceInfoQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        BeanUtils.copyProperties(interfaceInfoQueryRequest, interfaceInfo);
+        UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
+        BeanUtils.copyProperties(userInterfaceInfoQueryRequest, userInterfaceInfo);
 
-        long current = interfaceInfoQueryRequest.getCurrent();
-        long size = interfaceInfoQueryRequest.getPageSize();
+        long current = userInterfaceInfoQueryRequest.getCurrent();
+        long size = userInterfaceInfoQueryRequest.getPageSize();
 
-        String sortField = interfaceInfoQueryRequest.getSortField();
-        String sortOrder = interfaceInfoQueryRequest.getSortOrder();
-        String description = interfaceInfo.getDescription();
-        // content 需支持模糊搜索
-        interfaceInfo.setDescription(null);
+        String sortField = userInterfaceInfoQueryRequest.getSortField();
+        String sortOrder = userInterfaceInfoQueryRequest.getSortOrder();
         // 限制爬虫
         if (size > 50) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
-        QueryWrapper<InterfaceInfo> queryWrapper = new QueryWrapper<>(interfaceInfo);
-        queryWrapper.like(StringUtils.isNotBlank(description), "content", description);
+        QueryWrapper<UserInterfaceInfo> queryWrapper = new QueryWrapper<>(userInterfaceInfo);
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
-        Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.page(new Page<>(current, size), queryWrapper);
-        return ResultUtils.success(interfaceInfoPage);
-    }
-
-    /**
-     * 发布
-     *
-     * @param idRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/online")
-    @AuthCheck(mustRole = "admin")
-    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest,
-                                                     HttpServletRequest request) {
-        if (idRequest == null || idRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        long id = idRequest.getId();
-        // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
-        if (oldInterfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        // 判断该接口是否可以调用
-        com.yupi.yuapiclientsdk.model.User user = new com.yupi.yuapiclientsdk.model.User();
-        user.setUsername("test");
-        String username = yuApiClient.getUsernameByPost(user);
-        if (StringUtils.isBlank(username)) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
-        }
-        // 仅本人或管理员可修改
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        interfaceInfo.setId(id);
-        interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
-        boolean result = interfaceInfoService.updateById(interfaceInfo);
-        return ResultUtils.success(result);
-    }
-
-    /**
-     * 下线
-     *
-     * @param idRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/offline")
-    @AuthCheck(mustRole = "admin")
-    public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest,
-                                                      HttpServletRequest request) {
-        if (idRequest == null || idRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        long id = idRequest.getId();
-        // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
-        if (oldInterfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        // 仅本人或管理员可修改
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        interfaceInfo.setId(id);
-        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
-        boolean result = interfaceInfoService.updateById(interfaceInfo);
-        return ResultUtils.success(result);
-    }
-
-    /**
-     * 测试调用
-     *
-     * @param interfaceInfoInvokeRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/invoke")
-    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
-                                                    HttpServletRequest request) {
-        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        long id = interfaceInfoInvokeRequest.getId();
-        String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
-        // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
-        if (oldInterfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        if (oldInterfaceInfo.getStatus() == InterfaceInfoStatusEnum.OFFLINE.getValue()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已关闭");
-        }
-        User loginUser = userService.getLoginUser(request);
-        String accessKey = loginUser.getAccessKey();
-        String secretKey = loginUser.getSecretKey();
-        YuApiClient tempClient = new YuApiClient(accessKey, secretKey);
-        Gson gson = new Gson();
-        com.yupi.yuapiclientsdk.model.User user = gson.fromJson(userRequestParams, com.yupi.yuapiclientsdk.model.User.class);
-        String usernameByPost = tempClient.getUsernameByPost(user);
-        return ResultUtils.success(usernameByPost);
+        Page<UserInterfaceInfo> userInterfaceInfoPage = userInterfaceInfoService.page(new Page<>(current, size), queryWrapper);
+        return ResultUtils.success(userInterfaceInfoPage);
     }
 }

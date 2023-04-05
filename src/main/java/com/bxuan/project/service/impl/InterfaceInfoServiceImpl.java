@@ -1,10 +1,10 @@
 package com.bxuan.project.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bxuan.bxuanapicommon.model.entity.InterfaceInfo;
 import com.bxuan.project.common.ErrorCode;
 import com.bxuan.project.exception.BusinessException;
 import com.bxuan.project.mapper.InterfaceInfoMapper;
-import com.bxuan.project.model.entity.InterfaceInfo;
 import com.bxuan.project.service.InterfaceInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>
     implements InterfaceInfoService{
+
     @Override
     public void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add) {
         if (interfaceInfo == null) {
@@ -33,6 +34,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容过长");
         }
     }
+
 }
 
 

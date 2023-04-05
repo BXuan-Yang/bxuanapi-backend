@@ -2,6 +2,7 @@ package com.bxuan.project.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bxuan.bxuanapicommon.model.entity.User;
 import com.bxuan.project.annotation.AuthCheck;
 import com.bxuan.project.common.BaseResponse;
 import com.bxuan.project.common.DeleteRequest;
@@ -13,7 +14,6 @@ import com.bxuan.project.model.dto.post.PostAddRequest;
 import com.bxuan.project.model.dto.post.PostQueryRequest;
 import com.bxuan.project.model.dto.post.PostUpdateRequest;
 import com.bxuan.project.model.entity.Post;
-import com.bxuan.project.model.entity.User;
 import com.bxuan.project.service.PostService;
 import com.bxuan.project.service.UserService;
 import lombok.extern.slf4j.Slf4j;

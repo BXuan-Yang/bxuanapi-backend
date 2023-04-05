@@ -1,7 +1,7 @@
 package com.bxuan.project.service;
 
-import com.bxuan.project.model.entity.UserInterfaceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bxuan.bxuanapicommon.model.entity.UserInterfaceInfo;
 
 /**
 * @author 86150
@@ -9,5 +9,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2023-04-03 13:27:16
 */
 public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
+
+    void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean add);
+
+    boolean invokeCount(long interfaceInfoId, long userId);
 
 }

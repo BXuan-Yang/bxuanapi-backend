@@ -1,6 +1,7 @@
 package com.bxuan.project.service;
 
-import com.bxuan.project.model.entity.User;
+import com.bxuan.bxuanapicommon.model.entity.User;
+import com.yupi.yuapiclientsdk.client.YuApiClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,18 @@ class UserServiceTest {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private YuApiClient yuApiClient;
+
+    @Test
+    void testGetUsernameByPost(){
+        com.yupi.yuapiclientsdk.model.User user = new com.yupi.yuapiclientsdk.model.User();
+        user.setUsername("test");
+        String username = yuApiClient.getUsernameByPost(user);
+        System.out.println(username);
+    }
+
 
     @Test
     void testAddUser() {

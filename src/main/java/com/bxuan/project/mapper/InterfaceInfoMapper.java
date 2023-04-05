@@ -1,7 +1,7 @@
 package com.bxuan.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.bxuan.project.model.entity.InterfaceInfo;
+import com.bxuan.bxuanapicommon.model.entity.InterfaceInfo;
 
 /**
 * @author 86150
