@@ -10,9 +10,9 @@
         <relativePath/>
     </parent>
     <groupId>com.bxuan</groupId>
-    <artifactId>bxuan-interface-backend</artifactId>
+    <artifactId>bxuanapi-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>bxuan-interface-backend</name>
+    <name>bxuanapi-backend</name>
     <description>springboot 初始项目</description>
 
     <properties>
