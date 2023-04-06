@@ -1,5 +1,7 @@
 package com.bxuan.project.controller;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bxuan.bxuanapicommon.model.entity.InterfaceInfo;
@@ -253,12 +255,13 @@ public class InterfaceInfoController {
     @PostMapping("/invoke")
     public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
                                                     HttpServletRequest request) {
+        // 参数校验
         if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         long id = interfaceInfoInvokeRequest.getId();
         String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
-        // 判断是否存在
+        // 判断 接口信息 是否存在
         InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
@@ -270,9 +273,11 @@ public class InterfaceInfoController {
         String accessKey = loginUser.getAccessKey();
         String secretKey = loginUser.getSecretKey();
         YuApiClient tempClient = new YuApiClient(accessKey, secretKey);
+        // 调用 谷歌的json 对数据进行解析
         Gson gson = new Gson();
-        com.yupi.yuapiclientsdk.model.User user = gson.fromJson(userRequestParams, com.yupi.yuapiclientsdk.model.User.class);
-        String usernameByPost = tempClient.getUsernameByPost(user);
+        com.yupi.yuapiclientsdk.model.Rubbish rubbish = gson.fromJson(userRequestParams, com.yupi.yuapiclientsdk.model.Rubbish.class);
+        // 获得实体类对象
+        String usernameByPost = tempClient.getRubbishByPost(rubbish);
         return ResultUtils.success(usernameByPost);
     }
 }

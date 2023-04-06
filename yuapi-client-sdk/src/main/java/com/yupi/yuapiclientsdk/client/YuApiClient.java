@@ -5,6 +5,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import com.yupi.yuapiclientsdk.model.Rubbish;
 import com.yupi.yuapiclientsdk.model.User;
 
 
@@ -62,6 +63,18 @@ public class YuApiClient {
     public String getUsernameByPost(User user) {
         String json = JSONUtil.toJsonStr(user);
         HttpResponse httpResponse = HttpRequest.post("http://localhost:8123/api/name/user")
+                .addHeaders(getHeaderMap(json))
+                .body(json)
+                .execute();
+        System.out.println(httpResponse.getStatus());
+        String result = httpResponse.body();
+        System.out.println(result);
+        return result;
+    }
+
+    public String getRubbishByPost(Rubbish rubbish) {
+        String json = JSONUtil.toJsonStr(rubbish);
+        HttpResponse httpResponse = HttpRequest.post("http://localhost:8123/api/rubbish/getname")
                 .addHeaders(getHeaderMap(json))
                 .body(json)
                 .execute();

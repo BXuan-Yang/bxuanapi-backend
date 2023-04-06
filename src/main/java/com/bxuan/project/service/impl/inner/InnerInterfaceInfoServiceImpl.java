@@ -28,7 +28,7 @@ public class InnerInterfaceInfoServiceImpl implements InnerInterfaceInfoService 
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "请求参数错误！");
         }
         QueryWrapper<InterfaceInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("path", path);
+        queryWrapper.eq("url", path);
         queryWrapper.eq("method", method);
         return interfaceInfoMapper.selectOne(queryWrapper);
     }

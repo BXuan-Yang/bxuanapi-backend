@@ -4,13 +4,13 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: 10.0.12.9:8848
     gateway:
       default-filters:
         - AddResponseHeader=source, bxuan
       routes:
         - id: api_route
-          uri: http://localhost:8123
+          uri: http://10.0.12.9:8123
           predicates:
             - Path=/api/**
 #        - id: add_request_header_route
@@ -42,5 +42,5 @@ dubbo:
     port: -1
   registry:
     id: nacos-registry
-    address: nacos://localhost:8848
+    address: nacos://10.0.12.9:8848
 

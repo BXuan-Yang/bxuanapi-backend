@@ -1,5 +1,7 @@
 package com.bxuan.project.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bxuan.bxuanapicommon.model.entity.User;
@@ -8,6 +10,7 @@ import com.bxuan.project.exception.BusinessException;
 import com.bxuan.project.mapper.UserMapper;
 import com.bxuan.project.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -63,9 +66,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             // 2. 加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+            // 2.1、分配 ak、sk
+            String accessKey = DigestUtil.md5Hex((SALT) + userAccount + RandomUtil.randomNumbers(5));
+            String secretKey = DigestUtil.md5Hex((SALT) + userAccount + RandomUtil.randomNumbers(8));
             // 3. 插入数据
             User user = new User();
             user.setUserAccount(userAccount);
+            user.setAccessKey(accessKey);
+            user.setSecretKey(secretKey);
             user.setUserPassword(encryptPassword);
             boolean saveResult = this.save(user);
             if (!saveResult) {
